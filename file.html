@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Josh AI — 你的 AI 助手</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, "Noto Sans TC", system-ui, sans-serif;
+      background: #0b1020;
+      color: #f3f5ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 50% 0%, #243a72 0%, transparent 45%),
+        #0b1020;
+    }
+
+    .page {
+      width: min(900px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #7c5cff, #37c8ff);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .brand { font-size: 18px; font-weight: 700; }
+    .tagline { color: #9ba8c7; font-size: 13px; margin-top: 3px; }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 60px 0 28px;
+    }
+
+    .welcome { text-align: center; margin-bottom: 30px; }
+    .welcome h1 { font-size: clamp(32px, 7vw, 52px); margin: 0 0 12px; }
+    .welcome p { color: #aab5d0; margin: 0; }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 24px 0;
+    }
+
+    .suggestion {
+      border: 1px solid #293553;
+      border-radius: 999px;
+      color: #dce4ff;
+      background: #121a2c;
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .suggestion:hover { border-color: #7c5cff; background: #1a2340; }
+
+    .chat {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      margin: 8px 0 22px;
+    }
+
+    .message {
+      max-width: 85%;
+      padding: 13px 16px;
+      border-radius: 16px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: #6652d9;
+      border-bottom-right-radius: 5px;
+    }
+
+    .assistant {
+      align-self: flex-start;
+      background: #172137;
+      border: 1px solid #263450;
+      border-bottom-left-radius: 5px;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid #2b3856;
+      border-radius: 18px;
+      background: #111a2b;
+      box-shadow: 0 14px 40px #0004;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      color: #fff;
+      background: transparent;
+      padding: 10px;
+      font: inherit;
+    }
+
+    input::placeholder { color: #7f8ba8; }
+
+    button[type="submit"] {
+      border: 0;
+      border-radius: 12px;
+      padding: 0 18px;
+      color: white;
+      background: linear-gradient(135deg, #795cff, #4a8cff);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover { filter: brightness(1.12); }
+    button:focus-visible, input:focus-visible { outline: 2px solid #a997ff; outline-offset: 3px; }
+
+    footer {
+      text-align: center;
+      color: #74809d;
+      font-size: 12px;
+      padding: 18px 0 4px;
+    }
+
+    @media (max-width: 520px) {
+      .page { padding: 16px; }
+      main { padding-top: 36px; }
+      .suggestion { font-size: 13px; }
+    }button[type="submit"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="logo" aria-hidden="true">J</div>
+      <div>
+        <div class="brand">Josh AI</div>
+        <div class="tagline">你的靈感與效率助手</div>
+      </div>
+    </header>
+
+    <main>
+      <section class="welcome" id="welcome">
+        <h1>嗨，我是 Josh AI。</h1>
+        <p>今天想一起完成什麼？</p>
+      </section>
+
+      <section class="chat" id="chat" aria-live="polite"></section>
+
+      <div class="suggestions" id="suggestions">
+        <button class="suggestion" type="button">幫我規劃一週讀書計畫</button>
+        <button class="suggestion" type="button">替我的專案想幾個名字</button>
+        <button class="suggestion" type="button">用簡單的方式解釋黑洞</button>
+      </div>
+
+      <form id="chatForm">
+        <input id="prompt" type="text" placeholder="傳送訊息給 Josh AI…" autocomplete="off" aria-label="輸入訊息" />
+        <button id="clearChat" type="button">清除對話</button>
+<button type="submit">✓</button>
+
+      </form>
+    </main>
+
+    <footer>Josh AI 可以協助你發想、寫作與學習。</footer>
+  </div>
+
+  <script>
+  const form = document.querySelector("#chatForm");
+  const input = document.querySelector("#prompt");
+  const chat = document.querySelector("#chat");
+  const welcome = document.querySelector("#welcome");
+  const suggestions = document.querySelector("#suggestions");
+  const submitButton=form.querySelector('button[type="submit"]');
+const clearButton = document.querySelector("#clearChat");
+
+
+  function sendMessage(text) {
+    const message = text.trim();
+    if (!message || submitButton.disabled) return;
+
+    welcome.style.display = "none";
+    suggestions.style.display = "none";
+    chat.style.display = "flex";
+
+    addMessage(message, "user");
+    input.value = "";
+    submitButton.disabled = true;
+
+    const loadingBubble = addMessage("Josh AI 正在思考…", "assistant");
+
+    setTimeout(() => {
+      loadingBubble.textContent =
+        "您的行為已經嚴重違反我們的社群規範，請詳閱我們的社群規範。";
+
+      const link = document.createElement("a");
+      link.href =
+        "https://docs.google.com/document/d/1npu1p_3oBuOlNaSkUW9c0AJRMNrmRr-3e5vnr4DcKCg/edit?usp=sharing";
+      link.textContent = "開啟 Google 文件";
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      loadingBubble.appendChild(document.createElement("br"));
+      loadingBubble.appendChild(link);
+
+      submitButton.disabled = false;
+      input.focus();
+    }, 500);
+  }
+
+  function addMessage(text, role) {
+    const bubble = document.createElement("div");
+    bubble.className = `message ${role}`;
+    bubble.textContent = text;
+    chat.appendChild(bubble);
+    bubble.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return bubble;
+  }
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    sendMessage(input.value);
+  });
+
+  document.querySelectorAll(".suggestion").forEach((button) => {
+    button.addEventListener("click", () => sendMessage(button.textContent));
+  });clearButton.addEventListener("click", () => {
+  chat.innerHTML = "";
+  chat.style.display = "none";
+  welcome.style.display = "block";
+  suggestions.style.display = "flex";
+  input.value = "";
+  submitButton.disabled = false;
+  input.focus();
+});
+</script>
+</body>
+</html>
